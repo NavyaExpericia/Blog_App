@@ -1,42 +1,49 @@
-// import Link from "next/link";
-
-// const LoginPage = () => {
-//     return (
-//         <div className="login-container">
-//             <h1 className="login h1">Login</h1>
-//             <br />
-//             <form className="login-form" action="/api/login" method="POST">
-//                 <input
-//                  className="login-input"
-//                  type="email" 
-//                  placeholder="Email" />
-//                 <br />
-//                 <br />
-//                 <input 
-//                 className="login-input"
-//                 type="password" 
-//                 placeholder="Password" />
-//                 <br />
-//                 <br />
-//                 <button 
-//                 className="login-button"
-//                 type="submit">Login</button>
-//                 <br />
-//                 <h1 className="login h1">Don't have an account?</h1>
-//                 <Link className="login-link" href="/register">
-//                     <button className="login-button" type="button">Register</button>
-//                 </Link>
-                
-//             </form>
-//         </div>
-//     );
-// };
-
-// export default LoginPage;
+"use client";
 
 import Link from "next/link";
+import { useState } from "react";
+import { Error } from "../../components/errorMessage";
 
 const LoginPage = () => {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+
+    const [errors, setErrors] = useState({
+        email: "",
+        password: "",
+    });
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        const newErrors = {
+            email: "",
+            password: "",
+        };
+
+        // Email validation
+        if (!email.trim()) {
+            newErrors.email = "Email is required";
+        } else if (!/\S+@\S+\.\S+/.test(email)) {
+            newErrors.email = "Please enter a valid email";
+        }
+
+        // Password validation
+        if (!password) {
+            newErrors.password = "Password is required";
+        }
+
+        setErrors(newErrors);
+
+        const hasErrors = Object.values(newErrors).some(
+            (error) => error !== ""
+        );
+
+        if (!hasErrors) {
+            console.log("Login form is valid");
+        }
+    };
+
     return (
         <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
             <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
@@ -45,13 +52,15 @@ const LoginPage = () => {
                     <h1 className="text-3xl font-bold text-gray-800">
                         Welcome Back
                     </h1>
+
                     <p className="text-gray-500 mt-2">
                         Login to your account
                     </p>
                 </div>
 
-                <form className="space-y-5">
+                <form onSubmit={handleSubmit} className="space-y-5">
 
+                    {/* Email */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                             Email
@@ -59,11 +68,18 @@ const LoginPage = () => {
 
                         <input
                             type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                             placeholder="Enter your email"
-                            className="w-full border border-gray-300 rounded-lg px-4 py-3 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                            className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 placeholder:text-gray-500 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                         />
+
+                        {errors.email && (
+                            <Error message={errors.email} />
+                        )}
                     </div>
 
+                    {/* Password */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                             Password
@@ -71,9 +87,15 @@ const LoginPage = () => {
 
                         <input
                             type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
                             placeholder="Enter your password"
-                            className="w-full border border-gray-300 rounded-lg px-4 py-3 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                            className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 placeholder:text-gray-500 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                         />
+
+                        {errors.password && (
+                            <Error message={errors.password} />
+                        )}
                     </div>
 
                     <button
